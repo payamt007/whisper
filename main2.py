@@ -1,17 +1,28 @@
 import os
-import whisper
+from faster_whisper import WhisperModel
 
+# Add ffmpeg to PATH
 os.environ["PATH"] += os.pathsep + r"C:\ffmpeg-n7.1-latest-win64-lgpl-7.1\ffmpeg-n7.1-latest-win64-lgpl-7.1\bin"
 
 try:
-    model = whisper.load_model("tiny")
-    audio = whisper.load_audio("my_recording1.wav")
-    audio = whisper.pad_or_trim(audio)
-    mel = whisper.log_mel_spectrogram(audio, n_mels=model.dims.n_mels).to(model.device)
-    _, probs = model.detect_language(mel)
-    print(f"Detected language: {max(probs, key=probs.get)}")
-    options = whisper.DecodingOptions()
-    result = whisper.decode(model, mel, options)
-    print(result.text)
+    print("Loading Whisper model...")
+    model = WhisperModel("tiny", device="cpu", compute_type="int8")
+
+    # Check if audio file exists
+    audio_file = "my_recording1.wav"
+    if not os.path.exists(audio_file):
+        raise FileNotFoundError(f"Audio file {audio_file} not found")
+
+    print("Processing audio...")
+    segments, info = model.transcribe(audio_file)
+
+    print(f"Detected language: {info.language}")
+    print("Transcription:")
+
+    for segment in segments:
+        print(segment.text)
+
 except Exception as e:
     print(f"Error: {e}")
+    import traceback
+    traceback.print_exc()
