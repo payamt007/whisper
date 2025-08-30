@@ -1,40 +1,23 @@
-import os
-import time
+from fastapi import FastAPI
+from PIL import ImageGrab
+import uvicorn
+import io
 
-from faster_whisper import WhisperModel
+app = FastAPI()
 
-# Add ffmpeg to PATH
-# os.environ["PATH"] += os.pathsep + r"C:\ffmpeg-n7.1-latest-win64-lgpl-7.1\ffmpeg-n7.1-latest-win64-lgpl-7.1\bin"
 
-try:
-    start = time.time()
-    print("Loading Whisper model...")
-    model = WhisperModel("tiny", device="cpu", compute_type="int8")
+def screenshot_desktop(file_path: str = "screenshot.png") -> None:
+    img = ImageGrab.grab()
+    img.save(file_path, format="PNG")
+    print("Screenshot saved")
 
-    # Check if audio file exists
-    audio_file = "meeting_recording.m4a"
-    if not os.path.exists(audio_file):
-        raise FileNotFoundError(f"Audio file {audio_file} not found")
 
-    print("Processing audio...")
-    # To further increase speed, you can adjust transcription parameters:
-    # - beam_size=1: Uses greedy decoding, which is faster but potentially less accurate.
-    # - vad_filter=True: Skips silent parts of the audio, which can significantly
-    #   speed up transcription for audio with pauses.
-    # segments, info = model.transcribe(audio_file, beam_size=1, vad_filter=True)
-    segments, info = model.transcribe(audio_file)
+@app.get("/screenshot")
+async def screenshot():
+    screenshot_desktop()
 
-    print(f"Detected language: {info.language}")
-    print("Transcription:")
+    return {"done": True}
 
-    for segment in segments:
-        print(segment.text)
 
-    end = time.time()
-
-    print("Time taken: {:.2f} seconds".format(end - start))
-
-except Exception as e:
-    print(f"Error: {e}")
-    import traceback
-    traceback.print_exc()
+if __name__ == "__main__":
+    uvicorn.run("main:app", host="0.0.0.0", port=8000, reload=False)
