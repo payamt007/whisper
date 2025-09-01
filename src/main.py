@@ -6,7 +6,7 @@ from src.record import start_recording, stop_recording
 import glob
 from typing import List
 
-from src.helpers import _load_and_validate_state, _save_state_to_file, _clear_state_file, screenshot_desktop
+from src.helpers import _load_and_validate_state, _save_state_to_file, _clear_state_file, screenshot_desktop, list_files
 from src.types import RecordingInfo
 
 app = FastAPI()
@@ -59,34 +59,17 @@ async def stop_rec_endpoint():
 
     return {"message": "Recording stopped successfully", "output_file": filename}
 
-@app.get("/recordings", response_model=List[RecordingInfo])
-async def list_recordings():
-    """
-    Retrieves a list of all saved recordings, sorted by most recent first.
-    """
-    file_pattern = "recording_*.m4a"
-    recording_files = glob.glob(file_pattern)
+@app.get("/list-files", response_model=List[RecordingInfo])
+async def list_recordings(file_type: str = None):
 
-    response_data = []
-    for file_path in recording_files:
-        try:
-            file_size = os.path.getsize(file_path)
-            mod_time = os.path.getmtime(file_path)
-            response_data.append(
-                RecordingInfo(
-                    filename=file_path,
-                    size_bytes=file_size,
-                    modified_time=datetime.datetime.fromtimestamp(mod_time).isoformat(),
-                )
-            )
-        except FileNotFoundError:
-            # In the unlikely event a file is deleted between glob and getsize
-            continue
+    if file_type=="recording":
+        return list_files("*.m4a")
+    elif file_type=="screenshot":
+        return list_files("*.jpg")
+    else:
+        return []
 
-    # Sort by modification time, newest first
-    response_data.sort(key=lambda r: r.modified_time, reverse=True)
-
-    return response_data
+    return list_files()
 
 if __name__ == "__main__":
     # Run validation on startup before starting the server

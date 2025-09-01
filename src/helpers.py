@@ -1,5 +1,9 @@
 import json
 import os
+import glob
+from typing import List
+from src.types import RecordingInfo
+import datetime
 
 import psutil
 from PIL import ImageGrab
@@ -55,3 +59,31 @@ def screenshot_desktop(file_path: str = "screenshot.png") -> None:
     img = ImageGrab.grab()
     img.save(file_path, format="PNG")
     print("Screenshot saved")
+
+
+def list_files(file_pattern:str="recording_*.m4a") -> List[RecordingInfo]:
+    """
+    Retrieves a list of all saved recordings, sorted by most recent first.
+    """
+    recording_files = glob.glob(os.path.join("src","assets", file_pattern))
+
+    response_data = []
+    for file_path in recording_files:
+        try:
+            file_size = os.path.getsize(file_path)
+            mod_time = os.path.getctime(file_path)
+            response_data.append(
+                RecordingInfo(
+                    filename=file_path,
+                    size_bytes=file_size,
+                    creation_time=datetime.datetime.fromtimestamp(mod_time).isoformat(),
+                )
+            )
+        except FileNotFoundError:
+            # In the unlikely event a file is deleted between glob and getsize
+            continue
+
+    # Sort by modification time, newest first
+    response_data.sort(key=lambda r: r.creation_time, reverse=True)
+
+    return response_data
