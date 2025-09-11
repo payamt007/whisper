@@ -7,7 +7,7 @@ import glob
 from typing import List
 
 from src.helpers import _load_and_validate_state, _save_state_to_file, _clear_state_file, screenshot_desktop, list_files
-from src.types import RecordingInfo
+from src.defined_types import RecordingInfo
 
 app = FastAPI()
 

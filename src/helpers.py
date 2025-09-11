@@ -2,7 +2,7 @@ import json
 import os
 import glob
 from typing import List
-from src.types import RecordingInfo
+from src.defined_types import RecordingInfo
 import datetime
 
 import psutil
