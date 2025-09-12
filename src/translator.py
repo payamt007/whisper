@@ -54,5 +54,5 @@ def transcribe():
         traceback.print_exc()
 
 
-if __name__ == "__main__":
-    transcribe()
+# if __name__ == "__main__":
+#     transcribe()
