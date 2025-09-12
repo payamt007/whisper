@@ -3,6 +3,7 @@ import time
 
 from faster_whisper import WhisperModel
 
+
 # Add ffmpeg to PATH
 # os.environ["PATH"] += os.pathsep + r"C:\ffmpeg-n7.1-latest-win64-lgpl-7.1\ffmpeg-n7.1-latest-win64-lgpl-7.1\bin"
 
@@ -12,8 +13,9 @@ def transcribe():
         print("Loading Whisper model...")
         model = WhisperModel("tiny", device="cpu", compute_type="int8")
 
+        ROOT_DIR = os.path.dirname(os.path.abspath(__file__))
+        audio_file = os.path.join(ROOT_DIR, "voice_capture", "2025-09-12 11-49-35.mkv")
         # Check if audio file exists
-        audio_file = "meeting_recording.m4a"
         if not os.path.exists(audio_file):
             raise FileNotFoundError(f"Audio file {audio_file} not found")
 
@@ -44,3 +46,6 @@ def transcribe():
         print(f"Error: {e}")
         import traceback
         traceback.print_exc()
+
+if __name__ == "__main__":
+    transcribe()
