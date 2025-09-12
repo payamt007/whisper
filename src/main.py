@@ -7,6 +7,7 @@ from src.helpers import _load_and_validate_state, screenshot_desktop, list_files
 from src.defined_types import RecordingInfo
 from src.old_recorder.router import router as legacy_recorder_router
 from src.recorder.router import router as new_recorder_router
+from src.translator import transcribe
 
 app = FastAPI()
 
@@ -19,6 +20,13 @@ async def screenshot():
     screenshot_desktop()
 
     return {"done": True}
+
+
+@app.get("/translate-last")
+async def translate_last():
+    translated_text = transcribe()
+
+    return {"text": translated_text}
 
 
 @app.get("/list-files", response_model=List[RecordingInfo])

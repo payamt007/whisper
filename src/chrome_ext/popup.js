@@ -23,10 +23,10 @@ document.getElementById('stopBtn').onclick = async () => {
 document.getElementById('translateBtn').onclick = async () => {
   status.textContent = 'Translating...';
   try {
-    const res = await fetch('http://localhost:8000/recorder/translate-last', { method: 'POST' });
+    const res = await fetch('http://localhost:8000/translate-last', { method: 'GET' });
     if (res.ok) {
       const data = await res.json();
-      status.textContent = data.translation || 'Translated!';
+      status.textContent = data.text || 'Translated!';
     } else {
       status.textContent = 'Failed to translate.';
     }
