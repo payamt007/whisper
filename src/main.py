@@ -6,10 +6,12 @@ from typing import List
 from src.helpers import _load_and_validate_state, screenshot_desktop, list_files
 from src.defined_types import RecordingInfo
 from src.old_recorder.router import router as legacy_recorder_router
+from src.recorder.router import router as new_recorder_router
 
 app = FastAPI()
 
 app.include_router(legacy_recorder_router)
+app.include_router(new_recorder_router)
 
 
 @app.get("/screenshot")
