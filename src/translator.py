@@ -12,7 +12,8 @@ def transcribe():
     try:
         start = time.time()
         print("Loading Whisper model...")
-        model = WhisperModel("tiny", device="cpu", compute_type="int8")
+        # model = WhisperModel("tiny", device="cpu", compute_type="int8")
+        model = WhisperModel("small", device="cuda", compute_type="float16")
 
         ROOT_DIR = os.path.dirname(os.path.abspath(__file__))
         audio_dir = os.path.join(ROOT_DIR, "voice_capture")
@@ -54,5 +55,5 @@ def transcribe():
         traceback.print_exc()
 
 
-# if __name__ == "__main__":
-#     transcribe()
+if __name__ == "__main__":
+    transcribe()
